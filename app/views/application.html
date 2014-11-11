@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>OGG</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {{stylesheet_tag "main"}}
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="http://browsehappy.com/">upgrade your browser</a>
+        to improve your experience.</p>
+    <![endif]-->
+
+    <div class="grid">
+
+      <header class="twelve columns main-header-l">
+        <h1 class="brand eleven columns">
+          <a href="/">
+            <i class="icon-egg"></i>
+            ogg
+          </a>
+        </h1>
+
+        <a href="#" class="one column"><i class="icon-github external-logo"></i></a>
+      </header>
+
+
+      {{ yield }}
+
+    </div>
+
+    {{javascript_tag "main"}}
+  </body>
+</html>

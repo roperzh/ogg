@@ -1,0 +1,56 @@
+// *************************************
+//   Application
+// *************************************
+
+// -------------------------------------
+//   Vendor
+// -------------------------------------
+
+@import "vendor/normalize";
+@import "vendor/nitty-grid";
+
+// -------------------------------------
+//   Mixins
+// -------------------------------------
+
+// -------------------------------------
+//   Base
+// -------------------------------------
+
+@import "base/variables";
+@import "base/fonts";
+@import "base/base";
+
+// -------------------------------------
+//   Layouts
+// -------------------------------------
+
+@import "layouts/main-header";
+@import "layouts/main-content";
+
+// -------------------------------------
+//   Modules
+// -------------------------------------
+
+@import "modules/brand";
+@import "modules/search-form";
+@import "modules/title-box";
+@import "modules/external-logo";
+
+.feature-l {
+
+  li {
+    text-align: center;
+  }
+
+  img {
+    height: 120px;
+  }
+
+  i {
+    height: 120px;
+    font-size: 80px;
+    display: inline-block;
+    line-height: 115px;
+  }
+}
