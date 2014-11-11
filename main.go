@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/codegangsta/negroni"
+	"github.com/roperzh/ogg/app/services/crawler"
 	"github.com/shaoshing/train"
 	"gopkg.in/unrolled/render.v1"
 	"html/template"
@@ -25,7 +25,7 @@ func main() {
 	})
 
 	mux.HandleFunc("/render", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Print(req.FormValue("site"))
+		crawler.Crawl(req.FormValue("site"))
 		r.HTML(w, http.StatusOK, "render/show", nil)
 	})
 
