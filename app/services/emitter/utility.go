@@ -5,8 +5,11 @@ var broker *Broker
 // Initialize a new Broker
 func New() *Broker {
 	broker = &Broker{
-		make(map[chan string]bool),
-		make(chan (chan string)),
+		make(map[string]chan string),
+		make(chan struct {
+			A chan string
+			B string
+		}),
 		make(chan (chan string)),
 		make(chan string),
 	}

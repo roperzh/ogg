@@ -8,11 +8,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type Broker struct {
-	clients        map[chan string]bool
-	newClients     chan chan string
+	clients    map[string]chan string
+	newClients chan struct {
+		A chan string
+		B string
+	}
 	defunctClients chan chan string
 	Messages       chan string
 }
@@ -35,24 +40,24 @@ func (b *Broker) Start() {
 
 				// There is a new client attached and we
 				// want to start sending them messages.
-				b.clients[s] = true
+				b.clients[s.B] = s.A
 				log.Println("Added new client")
 
 			case s := <-b.defunctClients:
 
 				// A client has dettached and we want to
 				// stop sending them messages.
-				delete(b.clients, s)
-				log.Println("Removed client")
+				delete(b.clients, "asdf")
+				log.Println("Removed client", s)
 
 			case msg := <-b.Messages:
 
 				// There is a new message to send.  For each
 				// attached client, push the new message
 				// into the client's message channel.
-				for s, _ := range b.clients {
-					s <- msg
-				}
+
+				b.clients["asdf"] <- msg
+
 				log.Printf("Broadcast message to %d clients", len(b.clients))
 			}
 		}
@@ -62,6 +67,8 @@ func (b *Broker) Start() {
 // This Broker method handles an HTTP request
 //
 func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
 
 	// Make sure that the writer supports flushing.
 	//
@@ -77,7 +84,10 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Add this client to the map of those that should
 	// receive updates
-	b.newClients <- messageChan
+	b.newClients <- struct {
+		A chan string
+		B string
+	}{messageChan, id}
 
 	// Remove this client from the map of attached clients
 	// when `EventHandler` exits.

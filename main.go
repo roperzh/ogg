@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/codegangsta/negroni"
+	"github.com/gorilla/mux"
 	"github.com/jrallison/go-workers"
 	"github.com/shaoshing/train"
 	"gopkg.in/unrolled/render.v1"
@@ -24,7 +25,7 @@ func main() {
 
 	// Variables
 	n := negroni.Classic()
-	mux := http.NewServeMux()
+	mux := mux.NewRouter()
 	b := emitter.New()
 
 	// Routes
@@ -37,10 +38,10 @@ func main() {
 		r.HTML(w, http.StatusOK, "results/show", nil)
 	})
 
-	mux.HandleFunc("/events", b.ServeHTTP)
+	mux.HandleFunc("/events/{id}", b.ServeHTTP)
 
 	// Initialize train to serve assets
-	train.ConfigureHttpHandler(mux)
+	train.ConfigureHttpHandler(nil)
 
 	n.UseHandler(mux)
 

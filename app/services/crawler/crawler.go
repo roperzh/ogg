@@ -23,6 +23,7 @@ type ExampleExtender struct {
 
 func (this *ExampleExtender) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Document) (interface{}, bool) {
 
+	fmt.Print("inside crawler")
 	mg, _ := json.Marshal(gopengraph.New(doc))
 	emitter.Emit(string(mg))
 
