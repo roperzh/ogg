@@ -24,9 +24,9 @@ func main() {
 		r.HTML(w, http.StatusOK, "home/index", nil)
 	})
 
-	mux.HandleFunc("/render", func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/results", func(w http.ResponseWriter, req *http.Request) {
 		crawler.Crawl(req.FormValue("site"))
-		r.HTML(w, http.StatusOK, "render/show", nil)
+		r.HTML(w, http.StatusOK, "results/show", nil)
 	})
 
 	train.ConfigureHttpHandler(mux)
