@@ -1,14 +1,16 @@
 package crawler
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/PuerkitoBio/gocrawl"
-	"github.com/PuerkitoBio/goquery"
-	"github.com/roperzh/gopengraph"
-
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/PuerkitoBio/gocrawl"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/roperzh/gopengraph"
+	"github.com/roperzh/ogg/app/services/emitter"
 )
 
 const (
@@ -21,9 +23,8 @@ type ExampleExtender struct {
 
 func (this *ExampleExtender) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Document) (interface{}, bool) {
 
-	mg := gopengraph.New(doc)
-
-	fmt.Printf("Review og:type: %s\n", mg.OgAttrs["og:type"])
+	mg, _ := json.Marshal(gopengraph.New(doc))
+	emitter.Emit(string(mg))
 
 	urls := processLinks(doc)
 	links := make(map[*url.URL]interface{})
@@ -54,7 +55,6 @@ func (this *ExampleExtender) Filter(ctx *gocrawl.URLContext, isVisited bool) boo
 	return false
 }
 
-//copy from worker.go
 func processLinks(doc *goquery.Document) (result []*url.URL) {
 	urls := doc.Find("a[href]").Map(func(_ int, s *goquery.Selection) string {
 		val, _ := s.Attr("href")
