@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/gocrawl"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/roperzh/gopengraph"
+
 	"net/http"
 	"net/url"
 	"strings"
@@ -18,7 +20,11 @@ type ExampleExtender struct {
 }
 
 func (this *ExampleExtender) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Document) (interface{}, bool) {
-	fmt.Println("visit url: ", ctx.URL(), "state: ", ctx.State)
+
+	mg := gopengraph.New(doc)
+
+	fmt.Printf("Review og:type: %s\n", mg.OgAttrs["og:type"])
+
 	urls := processLinks(doc)
 	links := make(map[*url.URL]interface{})
 	i, _ := ctx.State.(int)
@@ -33,7 +39,6 @@ func (this *ExampleExtender) Visit(ctx *gocrawl.URLContext, res *http.Response, 
 }
 
 func (this *ExampleExtender) Filter(ctx *gocrawl.URLContext, isVisited bool) bool {
-	// fmt.Println("filter url: ", ctx.URL(), "state: ", ctx.State, "isVisited: ", isVisited, "ctx.IsRobotsURL(): ", ctx.IsRobotsURL())
 	if ctx.SourceURL() == nil {
 		ctx.State = DEPTH
 		return !isVisited
