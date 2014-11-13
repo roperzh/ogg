@@ -1,0 +1,52 @@
+{
+	"ImportPath": "github.com/roperzh/ogg",
+	"GoVersion": "go1.3",
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/cascadia",
+			"Comment": "null-31",
+			"Rev": "5d796540e3cb93ea0556c897e6a3c7690f614d35"
+		},
+		{
+			"ImportPath": "github.com/PuerkitoBio/gocrawl",
+			"Comment": "v0.4.1-12-g2fc0973",
+			"Rev": "2fc097368944ddc03031b493f2bd1e8553d59d09"
+		},
+		{
+			"ImportPath": "github.com/PuerkitoBio/goquery",
+			"Comment": "v0.3.2-58-gffa8a68",
+			"Rev": "ffa8a68c9f2882d21c77b65737c84e2f8690fa1f"
+		},
+		{
+			"ImportPath": "github.com/PuerkitoBio/purell",
+			"Comment": "v0.1.0-10-g1909519",
+			"Rev": "1909519b19f44750062c3e8209d65c0921f18060"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/negroni",
+			"Comment": "v0.1-34-gae96f1c",
+			"Rev": "ae96f1c1ac9eb11be7dff4fe4cb42f6846b93d77"
+		},
+		{
+			"ImportPath": "github.com/roperzh/gopengraph",
+			"Rev": "91698bda1cec907dce8615deff5eb570bc43fd4b"
+		},
+		{
+			"ImportPath": "github.com/shaoshing/train",
+			"Rev": "9168e9603431570245c742cff975651af5fbcf94"
+		},
+		{
+			"ImportPath": "github.com/temoto/robotstxt.go",
+			"Rev": "2f1297117982b399076203fc13b76a79796a881e"
+		},
+		{
+			"ImportPath": "golang.org/x/net/html",
+			"Comment": "null-196",
+			"Rev": "85c27507c4185e5eb889b6c69e4a3542153fb4e1"
+		},
+		{
+			"ImportPath": "gopkg.in/unrolled/render.v1",
+			"Rev": "344f85e13ccf75f3d53a27adfcd553f84f05b855"
+		}
+	]
+}
