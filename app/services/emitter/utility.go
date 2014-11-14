@@ -11,7 +11,7 @@ func New() *Broker {
 			B string
 		}),
 		make(chan (chan string)),
-		make(chan string),
+		make(chan struct{ A, B string }),
 	}
 
 	broker.Start()
@@ -20,6 +20,6 @@ func New() *Broker {
 }
 
 // Emit an event
-func Emit(message string) {
+func Emit(message struct{ A, B string }) {
 	broker.Messages <- message
 }

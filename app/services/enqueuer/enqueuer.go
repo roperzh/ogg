@@ -7,8 +7,7 @@ import (
 
 // Jobs
 func RenderPage(message *workers.Msg) {
-	a := message.Args().MustString("args")
-	crawler.Crawl(a)
+	crawler.Crawl(message.Args().MustMap())
 }
 
 // Public Methods
@@ -22,7 +21,7 @@ func Run() {
 	})
 
 	// Queues definitions
-	workers.Process("render:page", RenderPage, 10)
+	workers.Process("render:page", RenderPage, 100)
 
 	go workers.Run()
 }

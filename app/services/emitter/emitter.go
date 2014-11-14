@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 type Broker struct {
@@ -19,7 +17,7 @@ type Broker struct {
 		B string
 	}
 	defunctClients chan chan string
-	Messages       chan string
+	Messages       chan struct{ A, B string }
 }
 
 // This Broker method starts a new goroutine.  It handles
@@ -41,7 +39,7 @@ func (b *Broker) Start() {
 				// There is a new client attached and we
 				// want to start sending them messages.
 				b.clients[s.B] = s.A
-				log.Println("Added new client")
+				log.Println("=========== Added new client", b.clients[s.B] == s.A)
 
 			case s := <-b.defunctClients:
 
@@ -56,9 +54,9 @@ func (b *Broker) Start() {
 				// attached client, push the new message
 				// into the client's message channel.
 
-				b.clients["asdf"] <- msg
+				b.clients[msg.B] <- msg.A
 
-				log.Printf("Broadcast message to %d clients", len(b.clients))
+				log.Printf("Broadcast message to %s clients", msg.B)
 			}
 		}
 	}()
@@ -67,8 +65,7 @@ func (b *Broker) Start() {
 // This Broker method handles an HTTP request
 //
 func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
+	id := r.URL.Query().Get(":id")
 
 	// Make sure that the writer supports flushing.
 	//

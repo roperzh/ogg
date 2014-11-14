@@ -19,13 +19,12 @@ const (
 
 type ExampleExtender struct {
 	gocrawl.DefaultExtender
+	Id string
 }
 
 func (this *ExampleExtender) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Document) (interface{}, bool) {
-
-	fmt.Print("inside crawler")
 	mg, _ := json.Marshal(gopengraph.New(doc))
-	emitter.Emit(string(mg))
+	emitter.Emit(struct{ A, B string }{string(mg), this.Id})
 
 	urls := processLinks(doc)
 	links := make(map[*url.URL]interface{})
@@ -72,11 +71,13 @@ func processLinks(doc *goquery.Document) (result []*url.URL) {
 	return
 }
 
-func Crawl(url string) {
-	opts := gocrawl.NewOptions(new(ExampleExtender))
+func Crawl(args map[string]interface{}) {
+	e := new(ExampleExtender)
+	e.Id = args["id"].(string)
+	opts := gocrawl.NewOptions(e)
 	opts.CrawlDelay = 0
 	opts.LogFlags = gocrawl.LogNone
-	opts.SameHostOnly = false
+	opts.SameHostOnly = true
 	c := gocrawl.NewCrawlerWithOptions(opts)
-	c.Run(gocrawl.S{url: DEPTH})
+	c.Run(gocrawl.S{args["site"].(string): DEPTH})
 }

@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/codegangsta/negroni"
-	"github.com/gorilla/mux"
+
+	"github.com/bmizerany/pat"
 	"github.com/jrallison/go-workers"
 	"github.com/shaoshing/train"
 	"gopkg.in/unrolled/render.v1"
@@ -25,23 +26,31 @@ func main() {
 
 	// Variables
 	n := negroni.Classic()
-	mux := mux.NewRouter()
+	mux := pat.New()
 	b := emitter.New()
 
 	// Routes
-	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+	mux.Get("/", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		r.HTML(w, http.StatusOK, "home/index", nil)
-	})
+	}))
 
-	mux.HandleFunc("/results", func(w http.ResponseWriter, req *http.Request) {
-		workers.Enqueue("render:page", "Add", req.FormValue("site"))
+	mux.Get("/results", http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		tst := make(map[string]interface{})
+		tst["site"] = req.FormValue("site")
+		tst["id"] = req.FormValue("id")
+
+		workers.Enqueue("render:page", "Add", tst)
+
 		r.HTML(w, http.StatusOK, "results/show", nil)
-	})
+	}))
 
-	mux.HandleFunc("/events/{id}", b.ServeHTTP)
+	mux.Get("/events/:id", http.HandlerFunc(b.ServeHTTP))
 
-	// Initialize train to serve assets
-	train.ConfigureHttpHandler(nil)
+	train.SetFileServer()
+
+	mux.Get(train.Config.AssetsUrl, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		train.ServeRequest(w, r)
+	}))
 
 	n.UseHandler(mux)
 

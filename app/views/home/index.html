@@ -6,8 +6,9 @@
       <p class="subtitle">Just enter your site URL!</p>
     </header>
 
-    <form action="/results" method="GET">
+    <form action="/results" method="GET" data-behavior="results-form">
       <input type="text" name="site" placeholder="Go!"></input>
+      <input type="hidden" name="id" value=""></input>
       <input type="submit" value="Send"></input>
     </form>
 
