@@ -21,7 +21,7 @@ func Run() {
 	})
 
 	// Queues definitions
-	workers.Process("render:page", RenderPage, 100)
+	workers.Process("render:page", RenderPage, 50)
 
 	go workers.Run()
 }

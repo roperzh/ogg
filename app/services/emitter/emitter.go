@@ -13,11 +13,10 @@ import (
 type Broker struct {
 	clients    map[string]chan string
 	newClients chan struct {
-		A chan string
-		B string
+		Channel chan string
+		Id      string
 	}
-	defunctClients chan chan string
-	Messages       chan struct{ A, B string }
+	defunctClients chan string
 }
 
 // This Broker method starts a new goroutine.  It handles
@@ -38,25 +37,15 @@ func (b *Broker) Start() {
 
 				// There is a new client attached and we
 				// want to start sending them messages.
-				b.clients[s.B] = s.A
-				log.Println("=========== Added new client", b.clients[s.B] == s.A)
+				b.clients[s.Id] = s.Channel
+				log.Println("===== Added new client with id: ", b.clients[s.Id])
 
 			case s := <-b.defunctClients:
 
 				// A client has dettached and we want to
 				// stop sending them messages.
-				delete(b.clients, "asdf")
-				log.Println("Removed client", s)
-
-			case msg := <-b.Messages:
-
-				// There is a new message to send.  For each
-				// attached client, push the new message
-				// into the client's message channel.
-
-				b.clients[msg.B] <- msg.A
-
-				log.Printf("Broadcast message to %s clients", msg.B)
+				delete(b.clients, s)
+				log.Println("===== Removed client with id:", s)
 			}
 		}
 	}()
@@ -82,14 +71,14 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Add this client to the map of those that should
 	// receive updates
 	b.newClients <- struct {
-		A chan string
-		B string
+		Channel chan string
+		Id      string
 	}{messageChan, id}
 
 	// Remove this client from the map of attached clients
 	// when `EventHandler` exits.
 	defer func() {
-		b.defunctClients <- messageChan
+		b.defunctClients <- id
 	}()
 
 	// Set the headers related to event streaming.

@@ -7,11 +7,10 @@ func New() *Broker {
 	broker = &Broker{
 		make(map[string]chan string),
 		make(chan struct {
-			A chan string
-			B string
+			Channel chan string
+			Id      string
 		}),
-		make(chan (chan string)),
-		make(chan struct{ A, B string }),
+		make(chan string),
 	}
 
 	broker.Start()
@@ -20,6 +19,6 @@ func New() *Broker {
 }
 
 // Emit an event
-func Emit(message struct{ A, B string }) {
-	broker.Messages <- message
+func Emit(message struct{ Content, Id string }) {
+	broker.clients[message.Id] <- message.Content
 }
