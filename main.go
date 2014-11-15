@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/codegangsta/negroni"
 
@@ -38,5 +39,5 @@ func main() {
 	// Fire up the application!
 	renderer.Run()
 	enqueuer.Run()
-	n.Run(":8080")
+	n.Run(":" + os.Getenv("PORT"))
 }

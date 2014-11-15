@@ -1,6 +1,8 @@
 package enqueuer
 
 import (
+	"os"
+
 	"github.com/jrallison/go-workers"
 	"github.com/roperzh/ogg/app/services/crawler"
 )
@@ -14,7 +16,8 @@ func RenderPage(message *workers.Msg) {
 func Run() {
 
 	workers.Configure(map[string]string{
-		"server":   "localhost:6379",
+		"server":   os.Getenv("REDIS_URL"),
+		"password": os.Getenv("REDIS_PASS"),
 		"database": "0",
 		"pool":     "30",
 		"process":  "1",
