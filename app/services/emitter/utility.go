@@ -22,3 +22,7 @@ func New() *Broker {
 func Emit(message struct{ Content, Id string }) {
 	broker.clients[message.Id] <- message.Content
 }
+
+func CloseChannel(channelid string) {
+	broker.defunctClients <- channelid
+}

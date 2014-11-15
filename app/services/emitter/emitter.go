@@ -44,6 +44,7 @@ func (b *Broker) Start() {
 
 				// A client has dettached and we want to
 				// stop sending them messages.
+				close(b.clients[s])
 				delete(b.clients, s)
 				log.Println("===== Removed client with id:", s)
 			}
@@ -75,41 +76,31 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Id      string
 	}{messageChan, id}
 
-	// Remove this client from the map of attached clients
-	// when `EventHandler` exits.
-	defer func() {
-		b.defunctClients <- id
-	}()
-
 	// Set the headers related to event streaming.
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	// Don't close the connection, instead loop 10 times,
-	// sending messages and flushing the response each time
-	// there is a new message to send along.
+	// Don't close the connection, instead loop until the worker emit
+	// the finished event
 	//
-	// NOTE: we could loop endlessly; however, then you
-	// could not easily detect clients that dettach and the
-	// server would continue to send them messages long after
-	// they're gone due to the "keep-alive" header.  One of
-	// the nifty aspects of SSE is that clients automatically
-	// reconnect when they lose their connection.
-
-	for i := 0; i < 10; i++ {
+	for {
 
 		// Read from our messageChan.
-		msg := <-messageChan
+		msg, more := <-messageChan
 
-		// Write to the ResponseWriter, `w`.
-		fmt.Fprintf(w, "data: %s\n\n", msg)
+		if more {
+			// Write to the ResponseWriter, `w`.
+			fmt.Fprintf(w, "data: %s\n\n", msg)
 
-		// Flush the response.  This is only possible if
-		// the repsonse supports streaming.
-		f.Flush()
+			// Flush the response.  This is only possible if
+			// the repsonse supports streaming.
+			f.Flush()
+
+		} else {
+			fmt.Println("=========== Closing connection")
+			return
+		}
 	}
 
-	// Done.
-	log.Println("Finished HTTP request at ", r.URL.Path)
 }
