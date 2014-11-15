@@ -1,0 +1,1 @@
+Ogg.Behaviors.ResultsForm=Essential.Behavior.extend({init:function(){var a=this.el.querySelector('input[type="hidden"]');a.value=cuid()},events:{submit:"updateValues"},updateValues:function(b){var a=this.el.querySelector('input[type="text"]');a.value=this.setProtocol(a.value)},setProtocol:function(a){if(a.search(/^http[s]?\:\/\//)==-1){a="http://"+a}return a}});

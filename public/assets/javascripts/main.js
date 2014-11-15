@@ -1,3 +1,7 @@
+window.Ogg = {};
+window.Ogg.Behaviors = {};
+window.Ogg.Services = {};
+
 ;(function (global) {
 
 if ("EventSource" in global) return;
@@ -780,11 +784,98 @@ Essential.Core.SortMethods = {
   }
 };
 
+// Simple JavaScript Templating
+// John Resig - http://ejohn.org/ - MIT Licensed
+(function(){
+  var cache = {};
 
-'use strict';
+  this.tmpl = function tmpl(str, data){
+    // Figure out if we're getting a template, or if we need to
+    // load the template - and be sure to cache the result.
+    var fn = !/\W/.test(str) ?
+      cache[str] = cache[str] ||
+        tmpl(document.getElementById(str).innerHTML) :
 
-window.Ogg = {};
-window.Ogg.Behaviors = {};
+      // Generate a reusable function that will serve as a template
+      // generator (and which will be cached).
+      new Function("obj",
+        "var p=[],print=function(){p.push.apply(p,arguments);};" +
+
+        // Introduce the data as local variables using with(){}
+        "with(obj){p.push('" +
+
+        // Convert the template into pure JavaScript
+        str
+          .replace(/[\r\t\n]/g, " ")
+          .split("<%").join("\t")
+          .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+          .replace(/\t=(.*?)%>/g, "',$1,'")
+          .split("\t").join("');")
+          .split("%>").join("p.push('")
+          .split("\r").join("\\'")
+      + "');}return p.join('');");
+
+    // Provide some basic currying to the user
+    return data ? fn( data ) : fn;
+  };
+})();
+
+// -------------------------------------------
+//   Url Parser
+// -------------------------------------------
+
+Ogg.Services.UrlParser = {
+  getQueryVariable: function(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      if (decodeURIComponent(pair[0]) == variable) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+
+    console.log('Query variable %s not found', variable);
+  },
+
+  resolveUrl: function(baseUrl, url) {
+    if (url.indexOf("/") == 0) {
+      url = baseUrl + url;
+    }
+
+    return url;
+  }
+}
+
+Ogg.Behaviors.ResultUpdater = Essential.Behavior.extend({
+  init: function() {
+    var id = Ogg.Services.UrlParser.getQueryVariable("id");
+    var source = new EventSource("/events/" + id);
+    source.onmessage = this.updateContent.bind(this);
+  },
+
+  updateContent: function(event) {
+    var wrapper = document.createElement("ul");
+    var data = JSON.parse(event.data);
+    var fallbackImg = "http://dummyimage.com/200x200/000000/fff.jpg&text=none";
+
+    data.OgAttrs["og:image"] = data.OgAttrs["og:image"] ?
+      Ogg.Services.UrlParser.resolveUrl(data.Url, data.OgAttrs["og:image"]) : fallbackImg ;
+
+    wrapper.innerHTML = tmpl("item_tmpl", data);
+    var li = wrapper.firstElementChild;
+
+    this.el.appendChild(li);
+
+    setTimeout(function() {
+      li.style.opacity = 1;
+    }, 10);
+  }
+});
+
+// -------------------------------------------
+//   Results Form
+// -------------------------------------------
 
 Ogg.Behaviors.ResultsForm = Essential.Behavior.extend({
   init: function() {
@@ -796,75 +887,20 @@ Ogg.Behaviors.ResultsForm = Essential.Behavior.extend({
     "submit": "updateValues"
   },
 
-  updateValues: function() {
-
-  }
-});
-
-Ogg.Behaviors.ResultUpdater = Essential.Behavior.extend({
-  init: function() {
-    var id = this.getQueryVariable("id");
-    var source = new EventSource("/events/" + id);
-    source.onmessage = this.updateContent.bind(this);
+  updateValues: function(e) {
+    var urlInput = this.el.querySelector('input[type="text"]');
+    urlInput.value = this.setProtocol(urlInput.value);
   },
 
-  updateContent: function(event) {
-    var wrapper = document.createElement("li");
-    var data = JSON.parse(event.data);
-
-    var innerContent = '';
-    var imgSrc = data.OgAttrs["og:image"] ? this.resolveUrl(data.Url, data.OgAttrs["og:image"]) : "http://dummyimage.com/200x200/000000/fff.jpg&text=none";
-
-    wrapper.className = "scrapped-page ten columns";
-    wrapper.style.opacity = 0;
-
-    // innerContent += '<a href="' + data.Url + '">' + data.Url + '</a>';
-    innerContent += '<article class="scrapped-data">';
-    innerContent += '<h3>' + data.Title + '</h3>';
-    innerContent += '<p>' + data.Description + '</p>';
-
-    innerContent += '<h4>OG Data</h4>';
-    innerContent += '<ul class="og-list">';
-
-    for (var attrIndex in data.OgAttrs) {
-      if (attrIndex.indexOf("image") === -1) {
-        innerContent += '<li><strong>' + attrIndex + ': </strong>' + data.OgAttrs[attrIndex] + '</li>'
-      }
-    };
-
-    innerContent += '</ul></article>';
-
-    innerContent += '<figure><img src="' + imgSrc + '" alt="og:image"></figure>';
-
-    wrapper.innerHTML = innerContent;
-
-    this.el.appendChild(wrapper);
-
-    setTimeout(function() {
-      wrapper.style.opacity = 1;
-    }, 10);
-  },
-
-  getQueryVariable: function(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split('&');
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split('=');
-      if (decodeURIComponent(pair[0]) == variable) {
-        return decodeURIComponent(pair[1]);
-      }
-    }
-    console.log('Query variable %s not found', variable);
-  },
-
-  resolveUrl: function(baseUrl, url) {
-    if (url.indexOf("/") == 0) {
-      url = baseUrl + url;
+  setProtocol: function(url) {
+    if (url.search(/^http[s]?\:\/\//) == -1) {
+      url = 'http://' + url;
     }
 
     return url;
   }
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
   Essential.loadBehaviors({
