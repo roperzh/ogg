@@ -540,3 +540,7 @@ ul {
     .content .scrapped-page .og-list li {
       margin: 5px 0;
       font-size: 15px; }
+
+.loader {
+  display: block;
+  margin: 0 auto; }
