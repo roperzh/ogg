@@ -2,6 +2,7 @@ package enqueuer
 
 import (
 	"os"
+	"time"
 
 	"github.com/jrallison/go-workers"
 	"github.com/roperzh/ogg/app/services/crawler"
@@ -9,6 +10,7 @@ import (
 
 // Jobs
 func RenderPage(message *workers.Msg) {
+	time.Sleep(10 * time.Second)
 	crawler.Crawl(message.Args().MustMap())
 }
 

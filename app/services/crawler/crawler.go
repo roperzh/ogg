@@ -25,7 +25,7 @@ type ExampleExtender struct {
 func (this *ExampleExtender) Visit(ctx *gocrawl.URLContext, res *http.Response, doc *goquery.Document) (interface{}, bool) {
 	mg, _ := json.Marshal(gopengraph.New(doc))
 	emitter.Emit(struct{ Content, Id string }{string(mg), this.Id})
-
+	fmt.Println("<<<<<<<<< Crawling...")
 	urls := processLinks(doc)
 	links := make(map[*url.URL]interface{})
 	i, _ := ctx.State.(int)
