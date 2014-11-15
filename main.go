@@ -29,6 +29,7 @@ func main() {
 
 	mux.Get("/events/:id", http.HandlerFunc(b.ServeHTTP))
 
+	train.Config.Mode = os.Getenv("APP_ENV")
 	train.SetFileServer()
 
 	mux.Get(train.Config.AssetsUrl, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

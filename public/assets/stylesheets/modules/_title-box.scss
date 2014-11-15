@@ -1,0 +1,15 @@
+// -------------------------------------------
+//   Title Box
+// -------------------------------------------
+
+.title-box {
+  h2 {
+    font-size: 50px;
+    font-weight: lighter;
+    color: $blue;
+  }
+
+  .subtitle {
+    color: $gray;
+  }
+}
