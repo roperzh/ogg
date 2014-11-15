@@ -32,6 +32,7 @@ Ogg.Behaviors.ResultUpdater = Essential.Behavior.extend({
   updateContent: function(event) {
     var wrapper = document.createElement("li");
     var data = JSON.parse(event.data);
+
     var innerContent = '';
     var imgSrc = data.OgAttrs["og:image"] ? this.resolveUrl(data.Url, data.OgAttrs["og:image"]) : "http://dummyimage.com/200x200/000000/fff.jpg&text=none";
 

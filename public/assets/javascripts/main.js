@@ -811,8 +811,9 @@ Ogg.Behaviors.ResultUpdater = Essential.Behavior.extend({
   updateContent: function(event) {
     var wrapper = document.createElement("li");
     var data = JSON.parse(event.data);
+
     var innerContent = '';
-    var imgSrc = data.OgAttrs["og:image"] ? data.OgAttrs["og:image"] : "http://dummyimage.com/200x200/000000/fff.jpg&text=none";
+    var imgSrc = data.OgAttrs["og:image"] ? this.resolveUrl(data.Url, data.OgAttrs["og:image"]) : "http://dummyimage.com/200x200/000000/fff.jpg&text=none";
 
     wrapper.className = "scrapped-page ten columns";
     wrapper.style.opacity = 0;
@@ -826,7 +827,7 @@ Ogg.Behaviors.ResultUpdater = Essential.Behavior.extend({
     innerContent += '<ul class="og-list">';
 
     for (var attrIndex in data.OgAttrs) {
-      if(attrIndex.indexOf("image") === -1) {
+      if (attrIndex.indexOf("image") === -1) {
         innerContent += '<li><strong>' + attrIndex + ': </strong>' + data.OgAttrs[attrIndex] + '</li>'
       }
     };
@@ -854,6 +855,14 @@ Ogg.Behaviors.ResultUpdater = Essential.Behavior.extend({
       }
     }
     console.log('Query variable %s not found', variable);
+  },
+
+  resolveUrl: function(baseUrl, url) {
+    if (url.indexOf("/") == 0) {
+      url = baseUrl + url;
+    }
+
+    return url;
   }
 });
 
