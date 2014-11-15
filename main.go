@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/codegangsta/negroni"
-
 	"github.com/bmizerany/pat"
+	"github.com/codegangsta/negroni"
+	"github.com/joho/godotenv"
 	"github.com/shaoshing/train"
 
 	"github.com/roperzh/ogg/app/controllers"
@@ -20,6 +20,7 @@ func main() {
 	n := negroni.Classic()
 	mux := pat.New()
 	b := emitter.New()
+	godotenv.Load()
 
 	// Routes
 	mux.Get("/", http.HandlerFunc(controllers.HomeIndex))

@@ -45,6 +45,10 @@
 			"Rev": "c71bbf0bd453e38177e0758a9aadc531d4ec4b52"
 		},
 		{
+			"ImportPath": "github.com/joho/godotenv",
+			"Rev": "aab3ea4ba68f8fe7492604240b01190d9efc4db4"
+		},
+		{
 			"ImportPath": "github.com/jrallison/go-workers",
 			"Rev": "2aae4d367bfac8d2c9267d3212300df400599717"
 		},

@@ -1,3 +1,4 @@
 tmp/*
 .sass-cache/
 dump.rdb
+.env
