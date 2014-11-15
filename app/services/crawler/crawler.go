@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	DEPTH = 2
+	DEPTH = 3
 )
 
 type ExampleExtender struct {

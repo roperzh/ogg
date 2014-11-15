@@ -22,7 +22,7 @@ func (r *closeEventChannelMiddleware) Call(queue string, message *workers.Msg, n
 
 // Jobs
 func RenderPage(message *workers.Msg) {
-	time.Sleep(5 * time.Second)
+	time.Sleep(10 * time.Second)
 	crawler.Crawl(message.Args().MustMap())
 }
 
