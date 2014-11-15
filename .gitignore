@@ -2,3 +2,4 @@ tmp/*
 .sass-cache/
 dump.rdb
 .env
+.css$:.css
